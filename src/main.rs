@@ -37,6 +37,8 @@ pub fn random_color_codes() -> (u8, u8, u8) {
 }
 
 fn main() {
+    let mut cache: Vec<String> = Vec::new();
+    let mut max_length = 0;
     let infos = crate::resource::sys::init();
     let config_file = format!("{}/.config/fetrust/{}", env!("HOME"), "config.json");
     if !Path::new(&config_file).exists() {
@@ -168,36 +170,69 @@ fn main() {
                 //" idk to should I delete this
                 match name.as_str() {
                     "banner" => {
-                        println!("{}", printing);
+                        for j in 0..7{
+                            let mut temp_string = String::new();
+                            if j > 1 && j < 6{
+                                if let Some(banner_line) = printing.lines().nth(j-2){
+                                    temp_string.push_str(banner_line);
+                                    temp_string.push_str("        ");
+                                    max_length = temp_string.len();
+                                }
+                            }
+                            cache.push(temp_string);
+                        }
                     }
                     "user_a_host_name" => {
-                        println!("{}", printing);
+                        if let Some(cache_text) = cache.get_mut(0){
+                            if cache_text.len() < max_length{
+                                cache_text.push_str(&(0..max_length-10).into_iter().map(|_| String::from(" ")).collect::<Vec<String>>().join(""));
+                            }
+                            //cache_text.push_str(&printing);
+                        }
                     }
                     "brace" => {
-                        println!("{}", printing);
+                        
                     }
                     "os" => {
-                        println!("{}", printing);
+                        if let Some(cache_text) = cache.get_mut(2){
+                            cache_text.push_str(&printing);
+                        }
                     }
                     "kernel" => {
-                        println!("{}", printing);
+                        if let Some(cache_text) = cache.get_mut(3){
+                            cache_text.push_str(&printing);
+                        }
                     }
                     "shell" => {
-                        println!("{}", printing);
+                        if let Some(cache_text) = cache.get_mut(4){
+                            cache_text.push_str(&printing);
+                        }
                     }
                     "family" => {
-                        println!("{}", printing);
+                        if let Some(cache_text) = cache.get_mut(5){
+                            cache_text.push_str(&printing);
+                        }
                     }
                     "uptime" => {
-                        println!("{}", printing);
+                        if let Some(cache_text) = cache.get_mut(6){
+                            if cache_text.len() < max_length{
+                                cache_text.push_str(&(0..max_length).into_iter().map(|_| String::from(" ")).collect::<Vec<String>>().join(""));
+                            }
+                            cache_text.push_str(&printing);
+                        }
                     }
                     "cpu_type" => {
-                        println!("{}", printing);
+                        if let Some(cache_text) = cache.get_mut(7){
+                            cache_text.push_str(&printing);
+                        }
                     }
                     _ => {}
                 }
+                
                 //"
             }
         }
     }
+    let printable_text = cache.join("\r\n");
+    println!("{}", printable_text);
 }

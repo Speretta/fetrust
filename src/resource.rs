@@ -54,6 +54,7 @@ pub mod sys {
         version
     }
 
+    #[cfg(any(target_os = "linux", target_os = "android", target_os = "freebsd"))]
     pub fn get_unix_distro(file: &str) -> String {
         use std::fs;
         let os_release = fs::read_to_string(file).unwrap();
@@ -119,6 +120,12 @@ pub mod sys {
         })
         .unwrap()
     }
+    #[cfg(target_os = "windows")]
+    pub fn get_hostname() -> String{
+        String::from("test-hostname")
+    }
+
+    #[cfg(not(target_os = "windows"))]
     pub fn get_hostname() -> String {
         let mut hostname_str = "unknown hostname".to_string();
         match std::fs::read_to_string("/etc/hostname") {
@@ -170,7 +177,11 @@ pub mod sys {
             _ => "Unknown".to_string(),
         }
     }
-
+    #[cfg(target_os = "windows")]
+    pub fn get_uptime() -> String{
+        String::from("1")
+    }
+    #[cfg(not(target_os = "windows"))]
     pub fn get_uptime() -> String {
         /*let up_time = match up_time {
             Ok(x) => {
